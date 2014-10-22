@@ -257,7 +257,16 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// <param name="skeleton">skeleton to check</param>
         private bool getMove28(Skeleton skeleton)
         {
-            return false;
+            Joint caderaIz = skeleton.Joints[JointType.HipLeft],
+                  rodillaIz = skeleton.Joints[JointType.KneeLeft],
+                  pieIz = skeleton.Joints[JointType.FootLeft],
+                  pieDer = skeleton.Joints[JointType.FootRight];
+            float alturaPieIz = pieIz.Position.Y - pieDer.Position.Y;
+
+            if (alturaPieIz < 0.15)
+            {   return true;    }
+            else
+            {   return false;   }
         }
 
         /// <summary>
@@ -362,9 +371,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             if (joint0.TrackingState == JointTrackingState.Tracked && joint1.TrackingState == JointTrackingState.Tracked)
             {
                 if (correctMove)
-                { drawPen = this.trackedBonePen; System.Console.WriteLine("Pinto CORRECTO"); }  ///Quitar print *********
+                { drawPen = this.trackedBonePen;    }
                 else
-                { drawPen = this.errorBonePen; System.Console.WriteLine("Pinto ERRONEO"); }     ///Quitar print *********
+                { drawPen = this.errorBonePen;      }
             }
 
             drawingContext.DrawLine(drawPen, this.SkeletonPointToScreen(joint0.Position), this.SkeletonPointToScreen(joint1.Position));
