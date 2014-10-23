@@ -10,6 +10,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
     using System.Windows;
     using System.Windows.Media;
     using Microsoft.Kinect;
+    using System;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -255,15 +256,22 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// Devuelve si el skeleton cumple la posición 28
         /// </summary>
         /// <param name="skeleton">skeleton to check</param>
-        private bool getMove28(Skeleton skeleton)
+        /// <param name="distcancia">Distancia a desplazar el pie</param>
+        private bool getMove28(Skeleton skeleton, double distancia)
         {
-            Joint caderaIz = skeleton.Joints[JointType.HipLeft],
+            double freedomMove = distancia*0.2;
+            Joint caderaCentro = skeleton.Joints[JointType.HipCenter],
                   rodillaIz = skeleton.Joints[JointType.KneeLeft],
-                  pieIz = skeleton.Joints[JointType.FootLeft],
-                  pieDer = skeleton.Joints[JointType.FootRight];
-            float alturaPieIz = pieIz.Position.Y - pieDer.Position.Y;
+                  tobilloIz = skeleton.Joints[JointType.AnkleLeft],
+                  tobilloDer = skeleton.Joints[JointType.AnkleRight];
 
-            if (alturaPieIz < 0.15)
+            ///Calcular que la pierna esté recta (con grado de libertad) y el tobillo está a cierta distancia de la otra pierna
+            ///Distancia de desplazamiento entre tobillos
+            float disAnkles = tobilloDer.Position.Z - tobilloIz.Position.Z;
+            ///Distancia entre cadera y tobillo
+            double disLeg = Math.Sqrt(Math.Pow(caderaCentro.Position.Y, 2) + Math.Pow(distancia, 2));
+
+            if (disAnkles > (distancia - freedomMove) && disAnkles < (distancia + freedomMove))
             {   return true;    }
             else
             {   return false;   }
@@ -296,7 +304,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
 
             // Left Leg
-            bool move28 = getMove28(skeleton);
+            bool move28 = getMove28(skeleton, 0.3);
             this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft, move28);     //Checking move 28
             this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft, move28);
             this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft, move28);
