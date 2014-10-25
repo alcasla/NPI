@@ -265,16 +265,19 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
                   tobilloIz = skeleton.Joints[JointType.AnkleLeft],
                   tobilloDer = skeleton.Joints[JointType.AnkleRight];
 
-            ///Calcular que la pierna esté recta (con grado de libertad) y el tobillo está a cierta distancia de la otra pierna
-            ///Distancia de desplazamiento entre tobillos
+            ///Calcular que la pierna izquierda esté recta y las piernas se separan una longitud (parámetro)
+            ///Distancia de separación entre tobillos
             float disAnkles = tobilloDer.Position.Z - tobilloIz.Position.Z;
-            ///Distancia entre cadera y tobillo
-            double disLeg = Math.Sqrt(Math.Pow(caderaCentro.Position.Y, 2) + Math.Pow(distancia, 2));
+            /// /**************************************/
+            double disLeg = Math.Sqrt(Math.Pow(caderaCentro.Position.Y, 2) + Math.Pow(disAnkles, 2));   /**********************/
+            
+            ///Piernas separadas por 'distancia' con 20% libertad
+            /*if (disAnkles > (distancia - freedomMove) && disAnkles < (distancia + freedomMove))
+            {   return true;    }*/
+            ///Mantener pierna izquierda recta
+            ///Calcular en ángulo entre cadera y rodilla, y entre rodilla y tobillo (= pierna recta)
 
-            if (disAnkles > (distancia - freedomMove) && disAnkles < (distancia + freedomMove))
-            {   return true;    }
-            else
-            {   return false;   }
+            return false;
         }
 
         /// <summary>
