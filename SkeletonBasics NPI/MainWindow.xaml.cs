@@ -45,7 +45,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// <summary>
         /// Brush used to draw skeleton center point
         /// </summary>
-        private readonly Brush centerPointBrush = Brushes.Blue;
+        private readonly Brush centerPointBrush = Brushes.Blue;     /******* PROBARLO ************/
 
         /// <summary>
         /// Brush used for drawing joints that are currently tracked
@@ -55,7 +55,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// <summary>
         /// Brush used for drawing joints that are currently inferred
         /// </summary>        
-        private readonly Brush inferredJointBrush = Brushes.Yellow;
+        private readonly Brush inferredJointBrush = Brushes.Yellow;     /******* PROBARLO ************/
 
         /// <summary>
         /// Pen used for drawing bones that are currently tracked
@@ -254,28 +254,42 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
         /// <summary>
         /// Devuelve si el skeleton cumple la posición 28
+        /// Desplazar la pierna izquierda por el suelo una distancia 'distancia' y mantenerla estirada
         /// </summary>
         /// <param name="skeleton">skeleton to check</param>
         /// <param name="distcancia">Distancia a desplazar el pie</param>
         private bool getMove28(Skeleton skeleton, double distancia)
         {
-            double freedomMove = distancia*0.2;
+            double freedomMove = distancia*0.15;    ///20% de grado de livertad en posiciones
+            bool move = false;
             Joint caderaCentro = skeleton.Joints[JointType.HipCenter],
                   rodillaIz = skeleton.Joints[JointType.KneeLeft],
+                  rodillaDer = skeleton.Joints[JointType.KneeRight],
                   tobilloIz = skeleton.Joints[JointType.AnkleLeft],
                   tobilloDer = skeleton.Joints[JointType.AnkleRight];
 
-            ///Calcular que la pierna izquierda esté recta y las piernas se separan una longitud (parámetro)
-            ///Distancia de separación entre tobillos
+            ///Distancia entre tobillos
             float disAnkles = tobilloDer.Position.Z - tobilloIz.Position.Z;
-            /// /**************************************/
-            double disLeg = Math.Sqrt(Math.Pow(caderaCentro.Position.Y, 2) + Math.Pow(disAnkles, 2));   /**********************/
+            ///Ángulos de la pierna
+            double radianCaderaRodilla = Math.Atan((caderaCentro.Position.Z - rodillaIz.Position.Z) / (caderaCentro.Position.Y - rodillaIz.Position.Y)),
+                   radianRodillaTobillo = Math.Atan((rodillaIz.Position.Z - tobilloIz.Position.Z) / (rodillaIz.Position.Y - tobilloIz.Position.Y)),
+                   angleCaderaRodilla = radianCaderaRodilla / ((Math.PI) / 180),
+                   angleRodillaTobillo = radianRodillaTobillo / ((Math.PI) / 180);
+            ///Diferencia de altura de la rodilla izquierda con la derecha
+            double altura = rodillaIz.Position.Y - rodillaDer.Position.Y;
             
-            ///Piernas separadas por 'distancia' con 20% libertad
-            /*if (disAnkles > (distancia - freedomMove) && disAnkles < (distancia + freedomMove))
-            {   return true;    }*/
-            ///Mantener pierna izquierda recta
-            ///Calcular en ángulo entre cadera y rodilla, y entre rodilla y tobillo (= pierna recta)
+            ///System.Console.WriteLine("AnguloCR: " + angleCaderaRodilla + ". AnguloRT: " + angleRodillaTobillo );
+            ///System.Console.WriteLine("Altura pie iz: " + tobilloIz.Position.Y);
+
+            ///Piernas separadas por 'distancia'
+            if (disAnkles > (distancia - freedomMove) && disAnkles < (distancia + freedomMove))
+            {   move = true;    }
+            ///Mantener pierna izquierda recta y sin levantar del suelo
+            if (angleCaderaRodilla > angleRodillaTobillo-10 && angleCaderaRodilla < angleRodillaTobillo+10)
+            {
+                if (altura < freedomMove)
+                {   return move;    }
+            }
 
             return false;
         }
