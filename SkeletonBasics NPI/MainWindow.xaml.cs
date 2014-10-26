@@ -45,7 +45,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// <summary>
         /// Brush used to draw skeleton center point
         /// </summary>
-        private readonly Brush centerPointBrush = Brushes.Blue;     /******* PROBARLO ************/
+        private readonly Brush centerPointBrush = Brushes.Blue;
 
         /// <summary>
         /// Brush used for drawing joints that are currently tracked
@@ -53,9 +53,19 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         private readonly Brush trackedJointBrush = new SolidColorBrush(Color.FromArgb(255, 68, 192, 68));
 
         /// <summary>
+        /// Brush used for drawing joints that are currently tracked with before position
+        /// </summary>
+        private readonly Brush jointBrushBefore = Brushes.Yellow;
+
+        /// <summary>
+        /// Brush used for drawing joints that are currently tracked after position
+        /// </summary>
+        private readonly Brush jointBrushAfter = Brushes.Turquoise;
+
+        /// <summary>
         /// Brush used for drawing joints that are currently inferred
         /// </summary>        
-        private readonly Brush inferredJointBrush = Brushes.Yellow;     /******* PROBARLO ************/
+        private readonly Brush inferredJointBrush = Brushes.GhostWhite;
 
         /// <summary>
         /// Pen used for drawing bones that are currently tracked
@@ -252,12 +262,16 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             }
         }
 
+        /***************************************************************************************************/
+        /******************** Alberto Castillo Lamas - Movimiento 28 ***************************************/
+        /***************************************************************************************************/
         /// <summary>
         /// Devuelve si el skeleton cumple la posición 28
         /// Desplazar la pierna izquierda por el suelo una distancia 'distancia' y mantenerla estirada
         /// </summary>
         /// <param name="skeleton">skeleton to check</param>
         /// <param name="distcancia">Distancia a desplazar el pie</param>
+        /// <param name="ba">Booleano posición por atrás o pasada del movimiento</param>
         private bool getMove28(Skeleton skeleton, double distancia)
         {
             double freedomMove = distancia*0.15;    ///20% de grado de livertad en posiciones
@@ -295,6 +309,34 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         }
 
         /// <summary>
+        /// Devuelve si el skeleton está en la posición 28, pre posición o post posición
+        ///     0:  posición correcta
+        ///    -1:  pre posición
+        ///     1:  pos posición
+        /// Desplazar la pierna izquierda por el suelo una distancia 'distancia' y mantenerla estirada
+        /// </summary>
+        /// <param name="skeleton">skeleton to check</param>
+        /// <param name="distcancia">Distancia a desplazar el pie</param>
+        private int BAmove28(Skeleton skeleton, double distancia)
+        {
+            double freedomMove = distancia*0.15;    ///20% de grado de livertad en posiciones
+            Joint tobilloIz = skeleton.Joints[JointType.AnkleLeft],
+                  tobilloDer = skeleton.Joints[JointType.AnkleRight];
+
+            ///Distancia entre tobillos
+            float disAnkles = tobilloDer.Position.Z - tobilloIz.Position.Z;
+
+            if (disAnkles < distancia-freedomMove)
+                return -1;
+            if (disAnkles > distancia + freedomMove)
+                return 1;
+            else
+                return 0;
+        }
+        /***************************************************************************************************/
+        /***************************************************************************************************/
+
+        /// <summary>
         /// Draws a skeleton's bones and joints
         /// </summary>
         /// <param name="skeleton">skeleton to draw</param>
@@ -321,8 +363,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
 
             // Left Leg
-            bool move28 = getMove28(skeleton, 0.3);
-            this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft, move28);     //Checking move 28
+            bool move28 = getMove28(skeleton, 0.3);     //Checking move 28 correct or fail
+            int baMove28 = BAmove28(skeleton, 0.3);     //pre-position, in-position, or post-position
+            this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft, move28);
             this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft, move28);
             this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft, move28);
 
@@ -338,7 +381,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
 
                 if (joint.TrackingState == JointTrackingState.Tracked)
                 {
-                    drawBrush = this.trackedJointBrush;                    
+                    if(baMove28 == 0)
+                        drawBrush = this.trackedJointBrush;
+                    else    if(baMove28 == -1)
+                            drawBrush = this.jointBrushBefore;
+                            else
+                            drawBrush = this.jointBrushAfter;
                 }
                 else if (joint.TrackingState == JointTrackingState.Inferred)
                 {
