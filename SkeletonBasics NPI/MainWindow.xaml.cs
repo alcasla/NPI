@@ -263,7 +263,7 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         }
 
         /***************************************************************************************************/
-        /******************** Alberto Castillo Lamas - Movimiento 28 ***************************************/
+        /************************** Alberto Castillo Lamas - Movimiento 28 *********************************/
         /***************************************************************************************************/
         /// <summary>
         /// Devuelve si el skeleton cumple la posición 28
@@ -272,9 +272,9 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// <param name="skeleton">skeleton to check</param>
         /// <param name="distcancia">Distancia a desplazar el pie</param>
         /// <param name="ba">Booleano posición por atrás o pasada del movimiento</param>
-        private bool getMove28(Skeleton skeleton, double distancia)
+        private bool getMove28(Skeleton skeleton, double distancia, double freedomMove)
         {
-            double freedomMove = distancia*0.15;    ///20% de grado de livertad en posiciones
+            double freeMov = distancia * freedomMove;    ///Grado de livertad en posiciones
             bool move = false;
             Joint caderaCentro = skeleton.Joints[JointType.HipCenter],
                   rodillaIz = skeleton.Joints[JointType.KneeLeft],
@@ -296,12 +296,12 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             ///System.Console.WriteLine("Altura pie iz: " + tobilloIz.Position.Y);
 
             ///Piernas separadas por 'distancia'
-            if (disAnkles > (distancia - freedomMove) && disAnkles < (distancia + freedomMove))
+            if (disAnkles > (distancia - freeMov) && disAnkles < (distancia + freeMov))
             {   move = true;    }
             ///Mantener pierna izquierda recta y sin levantar del suelo
             if (angleCaderaRodilla > angleRodillaTobillo-10 && angleCaderaRodilla < angleRodillaTobillo+10)
             {
-                if (altura < freedomMove)
+                if (altura < freeMov)
                 {   return move;    }
             }
 
@@ -317,18 +317,18 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
         /// </summary>
         /// <param name="skeleton">skeleton to check</param>
         /// <param name="distcancia">Distancia a desplazar el pie</param>
-        private int BAmove28(Skeleton skeleton, double distancia)
+        private int BAmove28(Skeleton skeleton, double distancia, double freedomMove)
         {
-            double freedomMove = distancia*0.15;    ///20% de grado de livertad en posiciones
+            double freeMov = distancia * freedomMove;    ///Grado de livertad en posiciones
             Joint tobilloIz = skeleton.Joints[JointType.AnkleLeft],
                   tobilloDer = skeleton.Joints[JointType.AnkleRight];
 
             ///Distancia entre tobillos
             float disAnkles = tobilloDer.Position.Z - tobilloIz.Position.Z;
 
-            if (disAnkles < distancia-freedomMove)
+            if (disAnkles < distancia - freeMov)
                 return -1;
-            if (disAnkles > distancia + freedomMove)
+            if (disAnkles > distancia + freeMov)
                 return 1;
             else
                 return 0;
@@ -363,8 +363,8 @@ namespace Microsoft.Samples.Kinect.SkeletonBasics
             this.DrawBone(skeleton, drawingContext, JointType.WristRight, JointType.HandRight);
 
             // Left Leg
-            bool move28 = getMove28(skeleton, 0.3);     //Checking move 28 correct or fail
-            int baMove28 = BAmove28(skeleton, 0.3);     //pre-position, in-position, or post-position
+            bool move28 = getMove28(skeleton, 0.3, 0.15);     //Checking move 28 correct or fail
+            int baMove28 = BAmove28(skeleton, 0.3, 0.15);     //pre-position, in-position, or post-position
             this.DrawBone(skeleton, drawingContext, JointType.HipLeft, JointType.KneeLeft, move28);
             this.DrawBone(skeleton, drawingContext, JointType.KneeLeft, JointType.AnkleLeft, move28);
             this.DrawBone(skeleton, drawingContext, JointType.AnkleLeft, JointType.FootLeft, move28);
