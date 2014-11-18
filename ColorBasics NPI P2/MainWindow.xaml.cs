@@ -62,7 +62,7 @@ namespace Microsoft.Samples.Kinect.ColorBasics
         /// <summary>
         /// Brush used to draw points helper
         /// </summary>
-        private readonly Brush helperPointBrush = Brushes.DeepPink;
+        private readonly Brush helperPointBrush = Brushes.Cyan;
 
         /// <summary>
         /// Pen used for drawing bones that are currently tracked
@@ -521,14 +521,14 @@ namespace Microsoft.Samples.Kinect.ColorBasics
             bool[] m = { true, true, true, true };
             if (posInicial == false)        /*********** Aquí va la posición inicial, poner esta en la posición final **************/
             {
-                drawHelperPoints(dc, skeleton, 28);
+                drawHelperPoints(dc, skeleton, 28, dis1);
                 posInicial = getMove28(skeleton, dis1, gradoLibertad);
                 if (!posInicial) m[2] = false;
             }
             else 
                 if (posFinal == false)
                 {
-                    //drawHelperPoints(2);
+                    //drawHelperPoints(dc, skeleton, 28);
                 }
                 //else  //Ha realizado ambos movimientos -> mostrar mensaje final
 
@@ -539,11 +539,13 @@ namespace Microsoft.Samples.Kinect.ColorBasics
         /// Pinta objetos para guiar al usuario hacia el movimiento
         /// </summary>
         /// <param name="move">número de ejercicio a realizar</param>
-        private void drawHelperPoints(DrawingContext dc, Skeleton skeleton, int move)
+        private void drawHelperPoints(DrawingContext dc, Skeleton skeleton, int move, double dis)
         {
+            Point p; 
             switch (move)
             {
-                case 28: dc.DrawEllipse(this.helperPointBrush, null, this.SkeletonPointToScreen(skeleton.Position), 15, 15);
+                case 28: p = this.SkeletonPointToScreen(skeleton.Joints[JointType.AnkleLeft].Position);
+                         p.Y += dis*100/2;     dc.DrawEllipse(this.helperPointBrush, null, p, 12, 12);
                          break;
                 default: Console.WriteLine("Error: default case switch. Number exercise not found");
                          break;
