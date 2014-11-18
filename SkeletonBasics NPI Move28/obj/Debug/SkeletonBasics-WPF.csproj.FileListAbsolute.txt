@@ -22,3 +22,5 @@ C:\Users\Alberto\Documents\GitHub\NPI\SkeletonBasics NPI\obj\Debug\SkeletonBasic
 C:\Users\Alberto\Documents\GitHub\NPI\SkeletonBasics NPI\obj\Debug\SkeletonBasics-WPF.g.resources
 C:\Users\Alberto\Documents\GitHub\NPI\SkeletonBasics NPI\obj\Debug\Microsoft.Samples.Kinect.SkeletonBasics.Properties.Resources.resources
 C:\Users\Alberto\Documents\GitHub\NPI\SkeletonBasics NPI\obj\Debug\SkeletonBasics-WPF.csproj.GenerateResource.Cache
+C:\Users\Alberto\Documents\GitHub\NPI\SkeletonBasics NPI Move28\obj\Debug\SkeletonBasics-WPF.exe
+C:\Users\Alberto\Documents\GitHub\NPI\SkeletonBasics NPI Move28\obj\Debug\SkeletonBasics-WPF.pdb
