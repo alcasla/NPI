@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">HolaMundo</string>
+    <string name="hello_world">Hello Androide!</string>
+    <string name="action_settings">Settings</string>
+    <string name="botonFoto">Hacer foto</string>
+    <string name="descriptionImage">Imagen tomada por la cámara lanzada desde la app</string>
+
+</resources>
